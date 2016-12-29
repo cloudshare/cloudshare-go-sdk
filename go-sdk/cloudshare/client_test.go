@@ -35,13 +35,8 @@ func TestPing(t *testing.T) {
 		APIID:  apiid,
 	}
 
-	res, err := c.Request("GET", "ping", nil, nil)
-	assert.NoError(t, err, "failed to ping")
-
-	if err := CheckAPI(res); err != nil {
-		assert.Fail(t, err.Message)
-	}
-
+	res, apierr := c.Request("GET", "ping", nil, nil)
+	assert.Nil(t, apierr, "failed to ping")
 	body, err := ioutil.ReadAll(res.Body)
 	var parsed PingResponse
 	err = json.Unmarshal(body, &parsed)

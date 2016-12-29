@@ -28,35 +28,23 @@ func buildURL(path string, params *url.Values) *url.URL {
 	return u
 }
 
-// ErrorResponse is returned by CheckAPI
-type ErrorResponse struct {
-	Code    string
-	Message string
+// APIError is returned by client.Request in case of a failure.
+type APIError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Error   *error
 }
 
-// CheckAPI tests the HTTP response returned by Client.Request and return nil
-// if the call was successful.
-func CheckAPI(response *http.Response) *ErrorResponse {
-	if response.StatusCode/100 != 2 {
-		buffer, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			return &ErrorResponse{
-				Code:    "unknown error",
-				Message: "failed to parse http response body",
-			}
-		}
-		var ret ErrorResponse
-		json.Unmarshal(buffer, &ret)
-		return &ret
-	}
-	return nil
+func (e *APIError) String() string {
+	return e.Message
 }
 
 // Request invokes an API call
-// Example:
-// client.Request("get", "projects", nil)
 //
-func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*http.Response, error) {
+// Example:
+//
+// 		client.Request("get", "projects", nil)
+func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*http.Response, *APIError) {
 	client := http.Client{}
 	url := buildURL(path, queryParams)
 
@@ -72,5 +60,23 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 		Header: *headers,
 	}
 
-	return client.Do(request)
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, &APIError{Error: &err}
+	}
+
+	if response.StatusCode/100 != 2 {
+		buffer, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return response, &APIError{
+				Code:    "unknown error",
+				Message: "failed to parse http response body",
+				Error:   &err,
+			}
+		}
+		var ret APIError
+		json.Unmarshal(buffer, &ret)
+		return response, &ret
+	}
+	return response, nil
 }
