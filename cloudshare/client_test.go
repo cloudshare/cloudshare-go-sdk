@@ -3,7 +3,6 @@ package cloudshare
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"testing"
@@ -37,9 +36,8 @@ func TestPing(t *testing.T) {
 
 	res, apierr := c.Request("GET", "ping", nil, nil)
 	assert.Nil(t, apierr, "failed to ping")
-	body, err := ioutil.ReadAll(res.Body)
 	var parsed PingResponse
-	err = json.Unmarshal(body, &parsed)
+	err := json.Unmarshal(res.Body, &parsed)
 	assert.NoError(t, err, "Failed to parse json")
 	assert.Equal(t, "Pong", parsed.Result)
 }

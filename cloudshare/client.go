@@ -35,6 +35,14 @@ type APIError struct {
 	Error   *error
 }
 
+// APIResponse is returned by client.Request in case of success.
+//
+// The response body is a JSON buffer
+type APIResponse struct {
+	StatusCode int
+	Body       []byte
+}
+
 func (e *APIError) String() string {
 	return e.Message
 }
@@ -44,7 +52,7 @@ func (e *APIError) String() string {
 // Example:
 //
 // 		client.Request("get", "projects", nil)
-func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*http.Response, *APIError) {
+func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*APIResponse, *APIError) {
 	client := http.Client{}
 	url := buildURL(path, queryParams)
 
@@ -65,18 +73,29 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 		return nil, &APIError{Error: &err}
 	}
 
+	body, err := ioutil.ReadAll(response.Body)
 	if response.StatusCode/100 != 2 {
-		buffer, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return response, &APIError{
+			return nil, &APIError{
 				Code:    "unknown error",
 				Message: "failed to parse http response body",
 				Error:   &err,
 			}
 		}
 		var ret APIError
-		json.Unmarshal(buffer, &ret)
-		return response, &ret
+		json.Unmarshal(body, &ret)
+		return &APIResponse{StatusCode: response.StatusCode, Body: body}, &ret
 	}
-	return response, nil
+
+	if err != nil {
+		return nil, &APIError{
+			Message: "Unable to read HTTP response body",
+			Error:   &err,
+		}
+	}
+
+	return &APIResponse{
+		Body:       body,
+		StatusCode: response.StatusCode,
+	}, nil
 }
