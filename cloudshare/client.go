@@ -2,7 +2,6 @@ package cloudshare
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"

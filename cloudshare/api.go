@@ -109,68 +109,8 @@ func (c *Client) GetEnvironment(id string, permission string, ret *Environment) 
 	return c.makeGetRequest(path, ret, &query)
 }
 
-type VM struct {
-	Type         int         `json:"type"`
-	Name         string      `json:"name"`
-	Description  interface{} `json:"description"`
-	TemplateVMID string      `json:"templateVmId"`
-}
-
-type EnvironmentTemplateRequest struct {
-	Environment Environment `json:"environment"`
-	ItemsCart   []VM        `json:"itemsCart"`
-}
-
-type CreateTemplateEnvResponse struct {
-	Resources struct {
-		CPUCount     int `json:"cpuCount"`
-		DiskSizeMB   int `json:"diskSizeMB"`
-		MemorySizeMB int `json:"memorySizeMB"`
-	} `json:"resources"`
-	Vms []struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		OsTypeName  string `json:"osTypeName"`
-		ImageURL    string `json:"imageUrl"`
-		Resources   struct {
-			CPUCount     int `json:"cpuCount"`
-			DiskSizeMB   int `json:"diskSizeMB"`
-			MemorySizeMB int `json:"memorySizeMB"`
-		} `json:"resources"`
-		DomainName              interface{}   `json:"domainName"`
-		InternalIPs             []interface{} `json:"internalIPs"`
-		MacAddresses            []interface{} `json:"macAddresses"`
-		CanAddMultipleInstances bool          `json:"canAddMultipleInstances"`
-		HostName                string        `json:"hostName"`
-		VanityName              interface{}   `json:"vanityName"`
-		HTTPAccessEnabled       bool          `json:"httpAccessEnabled"`
-		StartWithHTTPS          bool          `json:"startWithHttps"`
-		User                    string        `json:"user"`
-		Password                string        `json:"password"`
-		ID                      string        `json:"id"`
-	} `json:"vms"`
-	EnvironmentID string `json:"environmentId"`
-}
-
 func (c *Client) CreateEnvironmentFromTemplate(request *EnvironmentTemplateRequest, response *CreateTemplateEnvResponse) *APIError {
 	return c.makePostRequest("envs", response, nil, request)
-}
-
-/*
-	GetTemplateParams allows you to filter templates by various criteria:
-
-	projectID string (optional). "" means don't filter
-	regionID string (optional). "" means don't filter
-	templateType string (optional). "0" = bluebrint, "1" = VM
-	skip int (default 0) - how many to skip.
-	take int (default 0) - how many to return. 0 = return all.
-*/
-type GetTemplateParams struct {
-	templateType string
-	projectID    string
-	regionID     string
-	skip         int
-	take         int
 }
 
 /* GetTemplate returns a list of available templates that can be filtered by GetTemplateParams
