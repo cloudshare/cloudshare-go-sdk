@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 )
 
 func (c *Client) makeRequest(path string, response interface{}, params *url.Values) *APIError {
@@ -61,10 +62,20 @@ func (c *Client) GetProjectDetails(projectID string, ret *ProjectDetails) *APIEr
 // GetBlueprints returns the blueprints available for a project
 func (c *Client) GetBlueprints(projectID string, ret *[]Blueprint) *APIError {
 	path := fmt.Sprintf("projects/%s/blueprints", projectID)
-	return c.makeRequest(path, &ret, nil)
+	return c.makeRequest(path, ret, nil)
 }
 
+// GetPolicies returns a list of all policies by project id
 func (c *Client) GetPolicies(projectID string, ret *[]Policy) *APIError {
 	path := fmt.Sprintf("projects/%s/policies", projectID)
-	return c.makeRequest(path, &ret, nil)
+	return c.makeRequest(path, ret, nil)
+}
+
+// GetEnvironments returns a list of environments, either in brief or full details
+// Possible criteria: allowed | allvisible
+func (c *Client) GetEnvironments(brief bool, criteria string, ret *[]Environment) *APIError {
+	query := url.Values{}
+	query.Add("brief", strconv.FormatBool(brief))
+	query.Add("criteria", criteria)
+	return c.makeRequest("envs", ret, &query)
 }

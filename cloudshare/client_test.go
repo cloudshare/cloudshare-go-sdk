@@ -89,3 +89,10 @@ func TestGetProjectsByFilter(t *testing.T) {
 	apierr := c.GetProjectsByFilter([]string{"WhereUserIsProjectManager"}, &projects)
 	assert.Nil(t, apierr, "failed to fetch projects")
 }
+
+func TestGetEnvs(t *testing.T) {
+	skipNoAPIKeys(t)
+	var envs = []Environment{}
+	apierr := c.GetEnvironments(false, "allvisible", &envs)
+	assert.Nil(t, apierr, "failed to fetch envs")
+}
