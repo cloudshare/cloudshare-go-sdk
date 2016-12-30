@@ -24,15 +24,21 @@ type PingResponse struct {
 	Result string `json:"result"`
 }
 
-func TestPing(t *testing.T) {
-	apikey, apiid := os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv("CLOUDSHARE_API_ID")
+var apikey, apiid = os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv("CLOUDSHARE_API_ID")
+
+var c = &Client{
+	APIKey: apikey,
+	APIID:  apiid,
+}
+
+func skipNoAPIKeys(t *testing.T) {
 	if apikey == "" || apiid == "" {
 		t.Skipf("test only runs with actual credentials")
 	}
-	c := &Client{
-		APIKey: apikey,
-		APIID:  apiid,
-	}
+}
+
+func TestPing(t *testing.T) {
+	skipNoAPIKeys(t)
 
 	res, apierr := c.Request("GET", "ping", nil, nil)
 	assert.Nil(t, apierr, "failed to ping")
@@ -40,4 +46,28 @@ func TestPing(t *testing.T) {
 	err := json.Unmarshal(res.Body, &parsed)
 	assert.NoError(t, err, "Failed to parse json")
 	assert.Equal(t, "Pong", parsed.Result)
+}
+
+func assertGreaterThan(t *testing.T, left int, right int) {
+	if left <= right {
+		t.Error("Expecting %d > %d", left, right)
+	}
+}
+
+func TestGetBlueprints(t *testing.T) {
+	skipNoAPIKeys(t)
+
+	projects, apierr := c.GetProjects()
+	assert.Nil(t, apierr, "failed to fetch projects")
+	assertGreaterThan(t, len(*projects), 0)
+	proj1 := (*projects)[0]
+
+	blueprints, apierr := c.GetBlueprints(proj1.ID)
+	assert.Nil(t, apierr, "failed to fetch projects")
+	assertGreaterThan(t, len(*blueprints), 0)
+
+	blue1, apierr := c.GetBlueprintDetails(proj1.ID, (*blueprints)[0].ID)
+	assert.Nil(t, apierr, "failed to fetch projects")
+	t.Log(blue1)
+	assert.NotEmpty(t, blue1.Name)
 }
