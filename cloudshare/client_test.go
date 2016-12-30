@@ -63,6 +63,10 @@ func TestGetBlueprints(t *testing.T) {
 	assertGreaterThan(t, len(projects), 0)
 	proj1 := projects[0]
 
+	var proj1Details = ProjectDetails{}
+	apierr = c.GetProjectDetails(proj1.ID, &proj1Details)
+	assert.Nil(t, apierr, "failed to fetch projects")
+
 	var blueprints = []Blueprint{}
 	apierr = c.GetBlueprints(proj1.ID, &blueprints)
 	assert.Nil(t, apierr, "failed to fetch projects")
@@ -72,4 +76,12 @@ func TestGetBlueprints(t *testing.T) {
 	apierr = c.GetBlueprintDetails(proj1.ID, blueprints[0].ID, &blue1)
 	assert.Nil(t, apierr, "failed to fetch projects")
 	assert.NotEmpty(t, blue1.Name)
+}
+
+func TestGetProjectsByFilter(t *testing.T) {
+	skipNoAPIKeys(t)
+
+	var projects = []Project{}
+	apierr := c.GetProjectsByFilter([]string{"WhereUserIsProjectManager"}, &projects)
+	assert.Nil(t, apierr, "failed to fetch projects")
 }

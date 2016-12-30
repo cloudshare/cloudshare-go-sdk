@@ -2,6 +2,7 @@ package cloudshare
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -74,6 +75,7 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
+	// fmt.Println(path, string(body)) // NOCOMMIT
 	if response.StatusCode/100 != 2 {
 		if err != nil {
 			return nil, &APIError{

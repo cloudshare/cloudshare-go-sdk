@@ -99,3 +99,42 @@ type Project struct {
 	IsActive bool   `json:"isActive"`
 	ID       string `json:"id"`
 }
+
+// ProjectDetails of a given projects
+type ProjectDetails struct {
+	HasNonGenericPolicy      bool `json:"hasNonGenericPolicy"`
+	CanAddPolicy             bool `json:"canAddPolicy"`
+	CanSeeMultipleRegions    bool `json:"canSeeMultipleRegions"`
+	MultipleUserRolesEnabled bool `json:"multipleUserRolesEnabled"`
+	EnvironmentResourceQuota struct {
+		CPUCount     int `json:"cpuCount"`
+		DiskSizeMB   int `json:"diskSizeMB"`
+		MemorySizeMB int `json:"memorySizeMB"`
+	} `json:"environmentResourceQuota"`
+	ProjectResourceQuota struct {
+		CPUCount     interface{} `json:"cpuCount"`
+		DiskSizeMB   interface{} `json:"diskSizeMB"`
+		MemorySizeMB interface{} `json:"memorySizeMB"`
+	} `json:"projectResourceQuota"`
+	SubscriptionResourceQuota struct {
+		CPUCount     interface{} `json:"cpuCount"`
+		DiskSizeMB   interface{} `json:"diskSizeMB"`
+		MemorySizeMB interface{} `json:"memorySizeMB"`
+	} `json:"subscriptionResourceQuota"`
+	Regions []struct {
+		ID           string `json:"id"`
+		Name         string `json:"name"`
+		FriendlyName string `json:"friendlyName"`
+		CloudName    string `json:"cloudName"`
+	} `json:"regions"`
+	CanCreateFromScratch        bool        `json:"canCreateFromScratch"`
+	DefaultPolicyForEnvCreation interface{} `json:"defaultPolicyForEnvCreation"`
+	Teams                       []struct {
+		IsDefaultTeam bool   `json:"isDefaultTeam"`
+		Name          string `json:"name"`
+		ID            string `json:"id"`
+	} `json:"teams"`
+	Name     string `json:"name"`
+	IsActive bool   `json:"isActive"`
+	ID       string `json:"id"`
+}
