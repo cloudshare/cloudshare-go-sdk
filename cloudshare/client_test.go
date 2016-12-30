@@ -93,6 +93,12 @@ func TestGetProjectsByFilter(t *testing.T) {
 func TestGetEnvs(t *testing.T) {
 	skipNoAPIKeys(t)
 	var envs = []Environment{}
-	apierr := c.GetEnvironments(false, "allvisible", &envs)
+	apierr := c.GetEnvironments(true, "allvisible", &envs)
 	assert.Nil(t, apierr, "failed to fetch envs")
+
+	var envID = envs[0].ID
+	var env1 = Environment{}
+	apierr = c.GetEnvironment(envID, "view", &env1)
+	assert.Nil(t, apierr, "failed to fetch env by ID")
+
 }

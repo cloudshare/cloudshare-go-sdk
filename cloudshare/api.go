@@ -79,3 +79,12 @@ func (c *Client) GetEnvironments(brief bool, criteria string, ret *[]Environment
 	query.Add("criteria", criteria)
 	return c.makeRequest("envs", ret, &query)
 }
+
+// GetEnvironment returns a specific environment by ID
+// permission can be view|edit|owner
+func (c *Client) GetEnvironment(id string, permission string, ret *Environment) *APIError {
+	path := fmt.Sprintf("envs/%s", id)
+	query := url.Values{}
+	query.Add("permission", permission)
+	return c.makeRequest(path, ret, &query)
+}
