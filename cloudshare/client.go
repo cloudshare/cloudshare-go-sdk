@@ -63,10 +63,19 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 
 	token := authToken(c.APIKey, c.APIID, url.String())
 	headers.Set("Authorization", "cs_sha1 "+token)
+
 	request := &http.Request{
 		Method: method,
 		URL:    url,
 		Header: *headers,
+	}
+
+	if content != nil {
+		bodyReader := strings.NewReader(*content)
+		request.Body = ioutil.NopCloser(bodyReader)
+
+		// TODO: Test this with Unicode
+		request.ContentLength = int64(len(*content))
 	}
 
 	response, err := client.Do(request)

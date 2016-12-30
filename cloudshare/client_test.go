@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -24,7 +25,7 @@ type PingResponse struct {
 	Result string `json:"result"`
 }
 
-var apikey, apiid = os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv("CLOUDSHARE_API_ID")
+var apikey, apiid, allowTestCreate = os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv("CLOUDSHARE_API_ID"), os.Getenv("ALLOW_TEST_CREATE")
 
 var c = &Client{
 	APIKey: apikey,
@@ -34,6 +35,12 @@ var c = &Client{
 func skipNoAPIKeys(t *testing.T) {
 	if apikey == "" || apiid == "" {
 		t.Skipf("test only runs with actual credentials")
+	}
+}
+
+func skipResourceCreation(t *testing.T) {
+	if allowTestCreate != "true" {
+		t.Skipf("Test that creates resources ($$$) skipped unless ALLOW_TEST_CREATE=true is defined")
 	}
 }
 
@@ -100,5 +107,57 @@ func TestGetEnvs(t *testing.T) {
 	var env1 = Environment{}
 	apierr = c.GetEnvironment(envID, "view", &env1)
 	assert.Nil(t, apierr, "failed to fetch env by ID")
+
+}
+
+func TestCreateEnv(t *testing.T) {
+	skipNoAPIKeys(t)
+	skipResourceCreation(t)
+
+	var regions = []Region{}
+	apierr := c.GetRegions(&regions)
+	assert.Nil(t, apierr, "failed to fetch envs")
+
+	region1 := regions[0].ID
+
+	var templates = []VMTemplate{}
+	var params = GetTemplateParams{templateType: "1", regionID: region1}
+	apierr = c.GetTemplates(&params, &templates)
+	assert.Nil(t, apierr, "failed to fetch templates")
+
+	var projects = []Project{}
+	apierr = c.GetProjects(&projects)
+	assert.Nil(t, apierr, "failed to fetch projects")
+	assertGreaterThan(t, len(projects), 0)
+	proj1 := projects[0]
+
+	// Find Ubuntu template
+	var ubuntuTemplateID string
+	for _, t := range templates {
+		if strings.Contains(t.Name, "Ubuntu 16.04") {
+			ubuntuTemplateID = t.ID
+			break
+		}
+	}
+
+	var request = EnvironmentTemplateRequest{
+		Environment: Environment{
+			Name:        "my test env",
+			Description: "not super important",
+			ProjectID:   proj1.ID,
+			RegionID:    region1,
+		},
+		ItemsCart: []VM{{
+			Type:         2,
+			Name:         "vm1",
+			TemplateVMID: ubuntuTemplateID,
+			Description:  "my little vm",
+		}},
+	}
+
+	var envCreateResponse CreateTemplateEnvResponse = CreateTemplateEnvResponse{}
+
+	apierr = c.CreateEnvironmentFromTemplate(&request, &envCreateResponse)
+	assert.Nil(t, apierr, "failed to create env from template")
 
 }
