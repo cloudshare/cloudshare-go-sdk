@@ -63,3 +63,8 @@ func (c *Client) GetBlueprints(projectID string, ret *[]Blueprint) *APIError {
 	path := fmt.Sprintf("projects/%s/blueprints", projectID)
 	return c.makeRequest(path, &ret, nil)
 }
+
+func (c *Client) GetPolicies(projectID string, ret *[]Policy) *APIError {
+	path := fmt.Sprintf("projects/%s/policies", projectID)
+	return c.makeRequest(path, &ret, nil)
+}

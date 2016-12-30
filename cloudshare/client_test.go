@@ -63,18 +63,22 @@ func TestGetBlueprints(t *testing.T) {
 	assertGreaterThan(t, len(projects), 0)
 	proj1 := projects[0]
 
+	var policies = []Policy{}
+	apierr = c.GetPolicies(proj1.ID, &policies)
+	assert.Nil(t, apierr, "failed to fetch policies")
+
 	var proj1Details = ProjectDetails{}
 	apierr = c.GetProjectDetails(proj1.ID, &proj1Details)
-	assert.Nil(t, apierr, "failed to fetch projects")
+	assert.Nil(t, apierr, "failed to fetch project details ")
 
 	var blueprints = []Blueprint{}
 	apierr = c.GetBlueprints(proj1.ID, &blueprints)
-	assert.Nil(t, apierr, "failed to fetch projects")
+	assert.Nil(t, apierr, "failed to fetch blueprints")
 	assertGreaterThan(t, len(blueprints), 0)
 
 	var blue1 = BlueprintDetails{}
 	apierr = c.GetBlueprintDetails(proj1.ID, blueprints[0].ID, &blue1)
-	assert.Nil(t, apierr, "failed to fetch projects")
+	assert.Nil(t, apierr, "failed to fetch blueprint details")
 	assert.NotEmpty(t, blue1.Name)
 }
 

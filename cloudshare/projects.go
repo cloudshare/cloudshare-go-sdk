@@ -138,3 +138,10 @@ type ProjectDetails struct {
 	IsActive bool   `json:"isActive"`
 	ID       string `json:"id"`
 }
+
+type Policy struct {
+	Name                     string `json:"name"`
+	ProjectID                string `json:"projectId"`
+	AllowEnvironmentCreation bool   `json:"allowEnvironmentCreation"`
+	ID                       string `json:"id"`
+}
