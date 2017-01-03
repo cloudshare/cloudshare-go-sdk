@@ -16,26 +16,42 @@ type Environment struct {
 type Environments []Environment
 
 type EnvironmentExtended struct {
-	Vms               []VMAccessDetails `json:"vms"`
-	Description       string            `json:"description"`
-	BlueprintID       string            `json:"blueprintId"`
-	BlueprintName     string            `json:"blueprintName"`
-	PolicyID          string            `json:"policyId"`
-	PolicyName        string            `json:"policyName"`
-	ExpirationTime    string            `json:"expirationTime"`
-	InvitationAllowed bool              `json:"invitationAllowed"`
-	Organization      interface{}       `json:"organization"`
-	OwnerEmail        string            `json:"ownerEmail"`
-	ProjectID         string            `json:"projectId"`
-	ProjectName       string            `json:"projectName"`
-	SnapshotID        interface{}       `json:"snapshotId"`
-	SnapshotName      interface{}       `json:"snapshotName"`
-	StatusCode        int               `json:"statusCode"`
-	StatusText        string            `json:"statusText"`
-	RegionID          string            `json:"regionId"`
-	Name              string            `json:"name"`
-	ID                string            `json:"id"`
+	Vms               []VMAccessDetails     `json:"vms"`
+	Description       string                `json:"description"`
+	BlueprintID       string                `json:"blueprintId"`
+	BlueprintName     string                `json:"blueprintName"`
+	PolicyID          string                `json:"policyId"`
+	PolicyName        string                `json:"policyName"`
+	ExpirationTime    string                `json:"expirationTime"`
+	InvitationAllowed bool                  `json:"invitationAllowed"`
+	Organization      interface{}           `json:"organization"`
+	OwnerEmail        string                `json:"ownerEmail"`
+	ProjectID         string                `json:"projectId"`
+	ProjectName       string                `json:"projectName"`
+	SnapshotID        interface{}           `json:"snapshotId"`
+	SnapshotName      interface{}           `json:"snapshotName"`
+	StatusCode        EnvironmentStatusCode `json:"statusCode"`
+	StatusText        string                `json:"statusText"`
+	RegionID          string                `json:"regionId"`
+	Name              string                `json:"name"`
+	ID                string                `json:"id"`
 }
+
+type EnvironmentStatusCode int
+
+const (
+	StatusFutureAllocationScheduled EnvironmentStatusCode = iota
+	StatusAllocationScheduledNoRun
+	StatusReady
+	StatusSuspended
+	StatusArchived
+	StatusDeleted
+	StatusPublishing
+	StatusPreparing
+	StatusCreationFailed
+	StatusInGrace
+	StatusStopping
+)
 
 type VMAccessDetails struct {
 	ID                string      `json:"id"`

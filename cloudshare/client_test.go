@@ -123,6 +123,15 @@ func TestGetEnvDetails(t *testing.T) {
 	assert.Nil(t, apierr, "failed to fetch extended env info")
 	assert.Equal(t, 1, len(envEx.Vms))
 	assert.Equal(t, "Ready", envEx.StatusText)
+	assert.Equal(t, StatusReady, envEx.StatusCode)
+}
+
+func TestEnvResume(t *testing.T) {
+	skipNoAPIKeys(t)
+	env, apierr := c.GetEnvironmentByName(testEnvName)
+	assert.Nil(t, apierr, "failed to fetch env by name")
+	apierr = c.EnvironmentResume(env.ID)
+	assert.Nil(t, apierr, "failed to resume env")
 }
 
 func TestCreateEnv(t *testing.T) {

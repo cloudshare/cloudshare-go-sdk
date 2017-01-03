@@ -24,14 +24,16 @@ func (c *Client) makeRequest(method string, path string, response interface{}, p
 	if err != nil {
 		return err
 	}
-	e := json.Unmarshal(res.Body, &response)
-	//// NOCOMMIT
-	//fmt.Println(path)
-	//fmt.Println(string(res.Body))
-	//fmt.Println("---------------------------------")
-	////
-	if e != nil {
-		return &APIError{Error: &e}
+	if response != nil {
+		e := json.Unmarshal(res.Body, &response)
+		//// NOCOMMIT
+		//fmt.Println(path)
+		// fmt.Println(string(res.Body))
+		//fmt.Println("---------------------------------")
+		////
+		if e != nil {
+			return &APIError{Error: &e}
+		}
 	}
 	return nil
 }
@@ -120,6 +122,17 @@ func (c *Client) GetEnvironmentExtended(id string, ret *EnvironmentExtended) *AP
 // CreateEnvironmentFromTemplate creates a new environment based on a VM template
 func (c *Client) CreateEnvironmentFromTemplate(request *EnvironmentTemplateRequest, response *CreateTemplateEnvResponse) *APIError {
 	return c.makePostRequest("envs", response, nil, request)
+}
+
+func (c *Client) envPutAction(action string, params *url.Values) *APIError {
+	return c.makeRequest("PUT", action, nil, params, nil)
+}
+
+// EnvironmentResume resumes a suspended environment
+func (c *Client) EnvironmentResume(envID string) *APIError {
+	query := url.Values{}
+	query.Add("envId", envID)
+	return c.envPutAction("envs/actions/resume", &query)
 }
 
 /* GetTemplates returns a list of available templates that can be filtered by GetTemplateParams
