@@ -134,6 +134,14 @@ func TestEnvResume(t *testing.T) {
 	assert.Nil(t, apierr, "failed to resume env")
 }
 
+func TestEnvExtend(t *testing.T) {
+	skipNoAPIKeys(t)
+	env, apierr := c.GetEnvironmentByName(testEnvName)
+	assert.Nil(t, apierr, "failed to fetch env by name")
+	apierr = c.EnvironmentExtend(env.ID)
+	assert.Nil(t, apierr, "failed to extend env")
+}
+
 func TestCreateEnv(t *testing.T) {
 	skipNoAPIKeys(t)
 	skipResourceCreation(t)

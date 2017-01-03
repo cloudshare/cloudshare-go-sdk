@@ -128,11 +128,25 @@ func (c *Client) envPutAction(action string, params *url.Values) *APIError {
 	return c.makeRequest("PUT", action, nil, params, nil)
 }
 
+func (c *Client) envPutActionByID(action string, id string) *APIError {
+	query := url.Values{}
+	query.Add("envId", id)
+	return c.envPutAction("envs/actions/"+action, &query)
+}
+
 // EnvironmentResume resumes a suspended environment
 func (c *Client) EnvironmentResume(envID string) *APIError {
-	query := url.Values{}
-	query.Add("envId", envID)
-	return c.envPutAction("envs/actions/resume", &query)
+	return c.envPutActionByID("resume", envID)
+}
+
+// EnvironmentSuspend suspends a running environment
+func (c *Client) EnvironmentSuspend(envID string) *APIError {
+	return c.envPutActionByID("suspend", envID)
+}
+
+// EnvironmentExtend extends the lifetime of an environment
+func (c *Client) EnvironmentExtend(envID string) *APIError {
+	return c.envPutActionByID("extend", envID)
 }
 
 /* GetTemplates returns a list of available templates that can be filtered by GetTemplateParams
