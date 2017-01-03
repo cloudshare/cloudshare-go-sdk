@@ -13,6 +13,50 @@ type Environment struct {
 	ID          string      `json:"id"`
 }
 
+type Environments []Environment
+
+type EnvironmentExtended struct {
+	Vms               []VMAccessDetails `json:"vms"`
+	Description       string            `json:"description"`
+	BlueprintID       string            `json:"blueprintId"`
+	BlueprintName     string            `json:"blueprintName"`
+	PolicyID          string            `json:"policyId"`
+	PolicyName        string            `json:"policyName"`
+	ExpirationTime    string            `json:"expirationTime"`
+	InvitationAllowed bool              `json:"invitationAllowed"`
+	Organization      interface{}       `json:"organization"`
+	OwnerEmail        string            `json:"ownerEmail"`
+	ProjectID         string            `json:"projectId"`
+	ProjectName       string            `json:"projectName"`
+	SnapshotID        interface{}       `json:"snapshotId"`
+	SnapshotName      interface{}       `json:"snapshotName"`
+	StatusCode        int               `json:"statusCode"`
+	StatusText        string            `json:"statusText"`
+	RegionID          string            `json:"regionId"`
+	Name              string            `json:"name"`
+	ID                string            `json:"id"`
+}
+
+type VMAccessDetails struct {
+	ID                string      `json:"id"`
+	Name              string      `json:"name"`
+	Description       string      `json:"description"`
+	StatusText        string      `json:"statusText"`
+	Progress          int         `json:"progress"`
+	ImageID           string      `json:"imageId"`
+	Os                string      `json:"os"`
+	WebAccessURL      interface{} `json:"webAccessUrl"`
+	Fqdn              string      `json:"fqdn"`
+	ExternalAddress   string      `json:"externalAddress"`
+	InternalAddresses []string    `json:"internalAddresses"`
+	CPUCount          int         `json:"cpuCount"`
+	DiskSizeGb        int         `json:"diskSizeGb"`
+	MemorySizeMb      int         `json:"memorySizeMb"`
+	Username          string      `json:"username"`
+	Password          string      `json:"password"`
+	ConsoleToken      string      `json:"consoleToken"`
+}
+
 // VMTemplate
 type VMTemplate struct {
 	Name                  string   `json:"name"`

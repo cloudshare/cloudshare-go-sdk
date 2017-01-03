@@ -17,7 +17,7 @@ func (c *Client) makeRequest(method string, path string, response interface{}, p
 				Message: "Failed to serialize request object to JSON",
 			}
 		}
-		var bodyString string = string(buffer)
+		bodyString := string(buffer)
 		body = &bodyString
 	}
 	res, err := c.Request(method, path, params, body)
@@ -93,7 +93,7 @@ func (c *Client) GetPolicies(projectID string, ret *[]Policy) *APIError {
 
 // GetEnvironments returns a list of environments, either in brief or full details
 // Possible criteria: allowed | allvisible
-func (c *Client) GetEnvironments(brief bool, criteria string, ret *[]Environment) *APIError {
+func (c *Client) GetEnvironments(brief bool, criteria string, ret *Environments) *APIError {
 	query := url.Values{}
 	query.Add("brief", strconv.FormatBool(brief))
 	query.Add("criteria", criteria)
@@ -109,11 +109,20 @@ func (c *Client) GetEnvironment(id string, permission string, ret *Environment) 
 	return c.makeGetRequest(path, ret, &query)
 }
 
+/* GetEnvironmentExtended returns extended information about an environment.
+See http://docs.cloudshare.com/rest-api/v3/environments/envs/actions-getextended/ */
+func (c *Client) GetEnvironmentExtended(id string, ret *EnvironmentExtended) *APIError {
+	query := url.Values{}
+	query.Add("envId", id)
+	return c.makeGetRequest("envs/actions/getextended", ret, &query)
+}
+
+// CreateEnvironmentFromTemplate creates a new environment based on a VM template
 func (c *Client) CreateEnvironmentFromTemplate(request *EnvironmentTemplateRequest, response *CreateTemplateEnvResponse) *APIError {
 	return c.makePostRequest("envs", response, nil, request)
 }
 
-/* GetTemplate returns a list of available templates that can be filtered by GetTemplateParams
+/* GetTemplates returns a list of available templates that can be filtered by GetTemplateParams
  */
 func (c *Client) GetTemplates(params *GetTemplateParams, ret *[]VMTemplate) *APIError {
 	query := url.Values{}

@@ -25,6 +25,8 @@ type PingResponse struct {
 	Result string `json:"result"`
 }
 
+const testEnvName = "go-sdk-test-env"
+
 var apikey, apiid, allowTestCreate = os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv("CLOUDSHARE_API_ID"), os.Getenv("ALLOW_TEST_CREATE")
 
 var c = &Client{
@@ -99,7 +101,7 @@ func TestGetProjectsByFilter(t *testing.T) {
 
 func TestGetEnvs(t *testing.T) {
 	skipNoAPIKeys(t)
-	var envs = []Environment{}
+	var envs = Environments{}
 	apierr := c.GetEnvironments(true, "allvisible", &envs)
 	assert.Nil(t, apierr, "failed to fetch envs")
 
@@ -108,6 +110,19 @@ func TestGetEnvs(t *testing.T) {
 	apierr = c.GetEnvironment(envID, "view", &env1)
 	assert.Nil(t, apierr, "failed to fetch env by ID")
 
+}
+
+func TestGetEnvDetails(t *testing.T) {
+	skipNoAPIKeys(t)
+	env, apierr := c.GetEnvironmentByName(testEnvName)
+	assert.Nil(t, apierr, "failed to fetch env by ID")
+	assert.NotNil(t, env, "failed to find test env. possibly this test suite hasn't been run with ALLOW_TEST_CREATE?")
+	assert.NotNil(t, env.ID)
+	var envEx EnvironmentExtended = EnvironmentExtended{}
+	apierr = c.GetEnvironmentExtended(env.ID, &envEx)
+	assert.Nil(t, apierr, "failed to fetch extended env info")
+	assert.Equal(t, 1, len(envEx.Vms))
+	assert.Equal(t, "Ready", envEx.StatusText)
 }
 
 func TestCreateEnv(t *testing.T) {
@@ -142,7 +157,7 @@ func TestCreateEnv(t *testing.T) {
 
 	var request = EnvironmentTemplateRequest{
 		Environment: Environment{
-			Name:        "my test env",
+			Name:        testEnvName,
 			Description: "not super important",
 			ProjectID:   proj1.ID,
 			RegionID:    region1,
