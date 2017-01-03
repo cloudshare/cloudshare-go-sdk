@@ -189,7 +189,7 @@ func TestCreateEnv(t *testing.T) {
 
 	var envCreateResponse CreateTemplateEnvResponse = CreateTemplateEnvResponse{}
 
-	apierr = c.CreateEnvironmentFromTemplate(&request, &envCreateResponse)
+	apierr = c.EnvironmentCreateFromTemplate(&request, &envCreateResponse)
 	assert.Nil(t, apierr, "failed to create env from template")
 
 }

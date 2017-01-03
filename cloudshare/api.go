@@ -119,8 +119,8 @@ func (c *Client) GetEnvironmentExtended(id string, ret *EnvironmentExtended) *AP
 	return c.makeGetRequest("envs/actions/getextended", ret, &query)
 }
 
-// CreateEnvironmentFromTemplate creates a new environment based on a VM template
-func (c *Client) CreateEnvironmentFromTemplate(request *EnvironmentTemplateRequest, response *CreateTemplateEnvResponse) *APIError {
+// EnvironmentCreateFromTemplate creates a new environment based on a VM template
+func (c *Client) EnvironmentCreateFromTemplate(request *EnvironmentTemplateRequest, response *CreateTemplateEnvResponse) *APIError {
 	return c.makePostRequest("envs", response, nil, request)
 }
 

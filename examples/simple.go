@@ -11,7 +11,7 @@ func main() {
 	}
 
 	// Get the list of projects for the user account
-	var projects = []Project{}
+	var projects = []cloudshare.Project{}
 	apierr := c.GetProjects(&projects)
 	if apierr != nil {
 		panic(apierr.Error)
