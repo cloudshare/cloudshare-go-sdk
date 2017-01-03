@@ -47,11 +47,21 @@ func (e *APIError) String() string {
 	return e.Message
 }
 
-// Request invokes an API call
-//
-// Example:
-//
-// 		client.Request("get", "projects", nil)
+/*
+
+Request invokes any API call
+
+Example:
+
+		client.Request("get", "projects", nil)
+
+		method: the HTTP method to use. e.g. "GET", "PUT"
+		path: the path relative to the API version.
+		for example for this method: http://docs.cloudshare.com/rest-api/v3/environments/envs/actions-getextended/
+			the path should be "envs/actions/getextended" (i.e. what goes after the v3/ prefix and before the query params (?)
+		queryParams: url query params
+		content: optional JSON body
+*/
 func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*APIResponse, *APIError) {
 	client := http.Client{}
 	url := buildURL(path, queryParams)
