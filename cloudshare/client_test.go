@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestBuildURL(t *testing.T) {
@@ -153,6 +154,32 @@ func TestDeleteEnv(t *testing.T) {
 	require.Nil(t, apierr, "failed to fetch env by name")
 	require.NotNil(t, env)
 	c.EnvironmentDelete(env.ID)
+}
+
+func waitForEnvStatus(t *testing.T, envID string, code EnvironmentStatusCode) EnvironmentStatusCode {
+	details := EnvironmentExtended{}
+	for i := 0; i < 10; i++ {
+		require.Nil(t, c.GetEnvironmentExtended(envID, &details))
+		if details.StatusCode == code {
+			return code
+		} else {
+			t.Logf("Status is still %d, waiting for %d", details.StatusCode, code)
+		}
+		time.Sleep(time.Second)
+	}
+
+	return details.StatusCode
+}
+
+func TestWaitForEnvironment(t *testing.T) {
+	env, apierr := c.GetEnvironmentByName(testEnvName)
+	envID := env.ID
+	require.Nil(t, apierr, "failed to fetch envs")
+	// Suspend and wait for suspended status
+	require.Nil(t, c.EnvironmentSuspend(envID))
+	require.Equal(t, StatusSuspended, waitForEnvStatus(t, envID, StatusSuspended))
+	require.Nil(t, c.EnvironmentResume(envID))
+	require.Equal(t, StatusReady, waitForEnvStatus(t, envID, StatusReady))
 }
 
 func TestCreateEnv(t *testing.T) {
