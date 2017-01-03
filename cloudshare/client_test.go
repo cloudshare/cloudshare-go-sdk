@@ -123,8 +123,6 @@ func TestGetEnvDetails(t *testing.T) {
 	apierr = c.GetEnvironmentExtended(env.ID, &envEx)
 	require.Nil(t, apierr, "failed to fetch extended env info")
 	require.Equal(t, 1, len(envEx.Vms))
-	require.Equal(t, "Ready", envEx.StatusText)
-	require.Equal(t, StatusReady, envEx.StatusCode)
 }
 
 func TestEnvResume(t *testing.T) {
