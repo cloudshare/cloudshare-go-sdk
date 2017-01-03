@@ -134,6 +134,10 @@ func (c *Client) envPutActionByID(action string, id string) *APIError {
 	return c.envPutAction("envs/actions/"+action, &query)
 }
 
+func (C *Client) EnvironmentDelete(envID string) *APIError {
+	return c.makeRequest("DELETE", fmt.Sprintf("envs/%s", envID), nil, nil, nil)
+}
+
 // EnvironmentResume resumes a suspended environment
 func (c *Client) EnvironmentResume(envID string) *APIError {
 	return c.envPutActionByID("resume", envID)

@@ -142,6 +142,15 @@ func TestEnvExtend(t *testing.T) {
 	assert.Nil(t, apierr, "failed to extend env")
 }
 
+func TestDeleteEnv(t *testing.T) {
+	skipNoAPIKeys(t)
+	if os.Getenv("TEST_DELETE_ENV") == "true" {
+		env, apierr := c.GetEnvironmentByName(testEnvName)
+		assert.Nil(t, apierr, "failed to fetch env by name")
+		c.EnvironmentDelete(env.ID)
+	}
+}
+
 func TestCreateEnv(t *testing.T) {
 	skipNoAPIKeys(t)
 	skipResourceCreation(t)
