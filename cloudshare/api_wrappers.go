@@ -19,3 +19,11 @@ func (c *Client) GetEnvironmentByName(name string) (*Environment, error) {
 	}
 	return allEnvs.envByName(name), nil
 }
+
+func EnvIDToURL(envID string) string {
+	return "https://use.cloudshare.com/Ent/Environment.mvc/View/" + envID[2:]
+}
+
+func (e *Environment) URL() string {
+	return EnvIDToURL(e.ID)
+}
