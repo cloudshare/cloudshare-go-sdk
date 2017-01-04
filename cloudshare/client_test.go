@@ -154,15 +154,27 @@ func TestDeleteEnv(t *testing.T) {
 	c.EnvironmentDelete(env.ID)
 }
 
+func TestFindTemplateByName(t *testing.T) {
+	skipNoAPIKeys(t)
+	templates := []VMTemplate{}
+	require.Nil(t, c.GetTemplates(nil, &templates))
+	for _, template := range templates {
+		if template.Name == "Docker - Ubuntu 16.04 Server" {
+			t.Logf("Found docker template: %s", template.ID)
+			return
+		}
+	}
+	t.Errorf("Docker template not found in list of templates")
+}
+
 func waitForEnvStatus(t *testing.T, envID string, code EnvironmentStatusCode) EnvironmentStatusCode {
 	details := EnvironmentExtended{}
 	for i := 0; i < 10; i++ {
 		require.Nil(t, c.GetEnvironmentExtended(envID, &details))
 		if details.StatusCode == code {
 			return code
-		} else {
-			t.Logf("Status is still %d, waiting for %d", details.StatusCode, code)
 		}
+		t.Logf("Status is still %d, waiting for %d", details.StatusCode, code)
 		time.Sleep(time.Second)
 	}
 

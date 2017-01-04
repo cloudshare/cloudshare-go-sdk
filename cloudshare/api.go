@@ -157,20 +157,22 @@ func (c *Client) EnvironmentExtend(envID string) *APIError {
  */
 func (c *Client) GetTemplates(params *GetTemplateParams, ret *[]VMTemplate) *APIError {
 	query := url.Values{}
-	if params.skip != 0 {
-		query.Add("skip", fmt.Sprintf("%d", params.skip))
-	}
-	if params.take != 0 {
-		query.Add("take", fmt.Sprintf("%d", params.take))
-	}
-	if params.regionID != "" {
-		query.Add("regionId", params.regionID)
-	}
-	if params.projectID != "" {
-		query.Add("projectId", params.projectID)
-	}
-	if params.templateType != "" {
-		query.Add("templateType", params.templateType)
+	if params != nil {
+		if params.skip != 0 {
+			query.Add("skip", fmt.Sprintf("%d", params.skip))
+		}
+		if params.take != 0 {
+			query.Add("take", fmt.Sprintf("%d", params.take))
+		}
+		if params.regionID != "" {
+			query.Add("regionId", params.regionID)
+		}
+		if params.projectID != "" {
+			query.Add("projectId", params.projectID)
+		}
+		if params.templateType != "" {
+			query.Add("templateType", params.templateType)
+		}
 	}
 	return c.makeGetRequest("templates", ret, &query)
 }
