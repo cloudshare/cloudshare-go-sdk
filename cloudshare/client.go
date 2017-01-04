@@ -32,7 +32,7 @@ func buildURL(path string, params *url.Values) *url.URL {
 type APIError struct {
 	Code       string `json:"code"`
 	Message    string `json:"message"`
-	InnerError *error
+	InnerError error
 }
 
 // APIResponse is returned by client.Request in case of success.
@@ -43,10 +43,10 @@ type APIResponse struct {
 	Body       []byte
 }
 
-func (e *APIError) Error() string {
+func (e APIError) Error() string {
 	s := e.Message
 	if e.InnerError != nil {
-		s += "\n" + (*e.InnerError).Error()
+		s += "\n" + e.InnerError.Error()
 	}
 	return s
 }
@@ -66,7 +66,7 @@ Example:
 		queryParams: url query params
 		content: optional JSON body
 */
-func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*APIResponse, *APIError) {
+func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*APIResponse, error) {
 	client := http.Client{}
 	url := buildURL(path, queryParams)
 
@@ -93,17 +93,17 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 
 	response, err := client.Do(request)
 	if err != nil {
-		return nil, &APIError{InnerError: &err}
+		return nil, APIError{InnerError: err}
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	// fmt.Println(path, string(body)) // NOCOMMIT
 	if response.StatusCode/100 != 2 {
 		if err != nil {
-			return nil, &APIError{
+			return nil, APIError{
 				Code:       "unknown error",
 				Message:    "failed to parse http response body",
-				InnerError: &err,
+				InnerError: err,
 			}
 		}
 		var ret APIError
@@ -112,9 +112,9 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 	}
 
 	if err != nil {
-		return nil, &APIError{
+		return nil, APIError{
 			Message:    "Unable to read HTTP response body",
-			InnerError: &err,
+			InnerError: err,
 		}
 	}
 

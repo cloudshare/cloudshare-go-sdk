@@ -11,7 +11,7 @@ func (envs *Environments) envByName(name string) *Environment {
 
 /* GetEnvironmentByName is a convenience function that searches for an environment by name
 and return nil if not found */
-func (c *Client) GetEnvironmentByName(name string) (*Environment, *APIError) {
+func (c *Client) GetEnvironmentByName(name string) (*Environment, error) {
 	allEnvs := Environments{}
 	apierr := c.GetEnvironments(true, "allvisible", &allEnvs)
 	if apierr != nil {

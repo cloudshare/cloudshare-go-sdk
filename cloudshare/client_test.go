@@ -64,6 +64,15 @@ func requireGreaterThan(t *testing.T, left int, right int) {
 	}
 }
 
+func TestBadKeys(t *testing.T) {
+	badClient := &Client{
+		APIKey: "not valid",
+		APIID:  "invalid",
+	}
+	regions := []Region{}
+	require.NotNil(t, badClient.GetRegions(&regions))
+}
+
 func TestGetBlueprints(t *testing.T) {
 	skipNoAPIKeys(t)
 
