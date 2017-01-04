@@ -13,8 +13,8 @@ func (c *Client) makeRequest(method string, path string, response interface{}, p
 		buffer, err := json.Marshal(&jsonable)
 		if err != nil {
 			return &APIError{
-				Error:   &err,
-				Message: "Failed to serialize request object to JSON",
+				InnerError: &err,
+				Message:    "Failed to serialize request object to JSON",
 			}
 		}
 		bodyString := string(buffer)
@@ -32,7 +32,7 @@ func (c *Client) makeRequest(method string, path string, response interface{}, p
 		//fmt.Println("---------------------------------")
 		////
 		if e != nil {
-			return &APIError{Error: &e}
+			return &APIError{InnerError: &e}
 		}
 	}
 	return nil

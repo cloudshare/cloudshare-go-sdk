@@ -30,9 +30,9 @@ func buildURL(path string, params *url.Values) *url.URL {
 
 // APIError is returned by client.Request in case of a failure.
 type APIError struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-	Error   *error
+	Code       string `json:"code"`
+	Message    string `json:"message"`
+	InnerError *error
 }
 
 // APIResponse is returned by client.Request in case of success.
@@ -43,8 +43,12 @@ type APIResponse struct {
 	Body       []byte
 }
 
-func (e *APIError) String() string {
-	return e.Message
+func (e *APIError) Error() string {
+	s := e.Message
+	if e.InnerError != nil {
+		s += "\n" + (*e.InnerError).Error()
+	}
+	return s
 }
 
 /*
@@ -89,7 +93,7 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 
 	response, err := client.Do(request)
 	if err != nil {
-		return nil, &APIError{Error: &err}
+		return nil, &APIError{InnerError: &err}
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -97,9 +101,9 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 	if response.StatusCode/100 != 2 {
 		if err != nil {
 			return nil, &APIError{
-				Code:    "unknown error",
-				Message: "failed to parse http response body",
-				Error:   &err,
+				Code:       "unknown error",
+				Message:    "failed to parse http response body",
+				InnerError: &err,
 			}
 		}
 		var ret APIError
@@ -109,8 +113,8 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 
 	if err != nil {
 		return nil, &APIError{
-			Message: "Unable to read HTTP response body",
-			Error:   &err,
+			Message:    "Unable to read HTTP response body",
+			InnerError: &err,
 		}
 	}
 
