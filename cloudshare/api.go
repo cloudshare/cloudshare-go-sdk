@@ -154,6 +154,11 @@ func (c *Client) EnvironmentSuspend(envID string) error {
 	return c.envPutActionByID("suspend", envID)
 }
 
+// EnvironmentPostpone extends the environment's suspend time
+func (c *Client) EnvironmentPostpone(envID string) error {
+	return c.envPutActionByID("postpone", envID)
+}
+
 // EnvironmentExtend extends the lifetime of an environment
 func (c *Client) EnvironmentExtend(envID string) error {
 	return c.envPutActionByID("extend", envID)
