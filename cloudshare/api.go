@@ -143,6 +143,12 @@ func (c *Client) EnvironmentResume(envID string) error {
 	return c.envPutActionByID("resume", envID)
 }
 
+func (c *Client) RebootVM(vmID string) error {
+	query := url.Values{}
+	query.Add("vmId", vmID)
+	return c.envPutAction("vms/actions/reboot", &query)
+}
+
 // EnvironmentSuspend suspends a running environment
 func (c *Client) EnvironmentSuspend(envID string) error {
 	return c.envPutActionByID("suspend", envID)

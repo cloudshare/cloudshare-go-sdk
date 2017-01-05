@@ -168,7 +168,7 @@ func TestFindTemplateByName(t *testing.T) {
 	templates := []VMTemplate{}
 	require.Nil(t, c.GetTemplates(nil, &templates))
 	for _, template := range templates {
-		if template.Name == "Docker - Ubuntu 16.04 Server" {
+		if template.Name == "Docker - Ubuntu 14.04 Server" {
 			t.Logf("Found docker template: %s", template.ID)
 			return
 		}

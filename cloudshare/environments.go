@@ -46,6 +46,7 @@ const (
 	StatusSuspended
 	StatusArchived
 	StatusDeleted
+	StatusUnknown
 	StatusPublishing
 	StatusPreparing
 	StatusCreationFailed
