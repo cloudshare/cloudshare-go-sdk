@@ -164,6 +164,22 @@ func (c *Client) EnvironmentExtend(envID string) error {
 	return c.envPutActionByID("extend", envID)
 }
 
+type EditVMHardwareRequest struct {
+	VMID          string      `json:"vmId"`
+	NumCPUs       interface{} `json:"numCpus"`
+	MemorySizeMBs interface{} `json:"memorySizeMBs"`
+	DiskSizeGBs   interface{} `json:"diskSizeGBs"`
+}
+
+type EditVMHardwareResponse struct {
+	ConflictsFound bool   `json:"conflictsFound"`
+	Conflicts      string `json:"conflicts"`
+}
+
+func (c *Client) EditVMHardware(request EditVMHardwareRequest, response *EditVMHardwareResponse) error {
+	return c.makeRequest("PUT", "vms/actions/editvmhardware", response, nil, request)
+}
+
 /* GetTemplates returns a list of available templates that can be filtered by GetTemplateParams
  */
 func (c *Client) GetTemplates(params *GetTemplateParams, ret *[]VMTemplate) error {
