@@ -16,7 +16,6 @@ func main() {
 		cli.StringFlag{
 			Name:  "method, m",
 			Value: "get",
-			Usage: "HTTP method (get|post|put|delete)",
 		},
 		cli.StringFlag{
 			Name:   "api-key",
@@ -72,6 +71,8 @@ func main() {
 
 		response, err := client.Request(method, path, &query, &data)
 		if err != nil {
+			fmt.Println(err)
+			fmt.Println(string(response.Body))
 			return err
 
 		}
