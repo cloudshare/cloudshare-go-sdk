@@ -9,9 +9,12 @@ import (
 )
 
 // Client holds the API credentials can be found in your User Details page.
+// APIKey & APIID are mandatory, and you can get your keys on the user details page.
+// Tags is optional, and defaults to "go_sdk". It's for internal analytics, so feel free to ignore it.
 type Client struct {
 	APIKey string
 	APIID  string
+	Tags   string
 }
 
 func buildURL(path string, params *url.Values) *url.URL {
@@ -68,6 +71,16 @@ Example:
 */
 func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*APIResponse, error) {
 	client := http.Client{}
+
+	if c.Tags == "" {
+		c.Tags = "go_sdk"
+	}
+
+	if queryParams == nil {
+		queryParams = &url.Values{}
+	}
+	queryParams.Set("apiTags", c.Tags)
+
 	url := buildURL(path, queryParams)
 
 	headers := &http.Header{}
@@ -97,7 +110,6 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
-	// fmt.Println(path, string(body)) // NOCOMMIT
 	if response.StatusCode/100 != 2 {
 		if err != nil {
 			return nil, APIError{

@@ -33,6 +33,7 @@ var apikey, apiid, allowTestCreate = os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv(
 var c = &Client{
 	APIKey: apikey,
 	APIID:  apiid,
+	Tags:   "go_sdk_test",
 }
 
 func skipNoAPIKeys(t *testing.T) {

@@ -59,6 +59,7 @@ func main() {
 		client := &cs.Client{
 			APIKey: apiKey,
 			APIID:  apiID,
+			Tags:   "cscurl",
 		}
 
 		data := c.String("data")
