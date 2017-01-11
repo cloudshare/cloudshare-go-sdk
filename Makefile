@@ -23,9 +23,9 @@ $(PLATFORMS):
 	cd $(out_dir); tar czf $(current_dir)/dist/$(package)_$(arch)-$(os).tar.gz $(base)
 
 upload: package
-	github-release cloudshare/go-sdk $(TAG) master desc 'dist/*.gz'
+	github-release cloudshare/go-sdk $(TAG) master '' 'dist/*.gz'
 
-clean: 
+clean:
 	rm -rf dist
 
 .PHONY: package $(PLATFORMS) build clean
