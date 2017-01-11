@@ -41,7 +41,9 @@ func main() {
 We provide friendly, typed wrappers for the most common API operations.
 
 Have a look at the go docs for the package (`godoc -http=:6060` in the repository directory)
-to see the types and wrapper functions.
+to see the types and wrapper functions, or just look in `cloudshare/api.go`.
+
+If there's no API wrapper for the particular function you need, just use the generic `Request` (see above).
 
 ```
 package main
