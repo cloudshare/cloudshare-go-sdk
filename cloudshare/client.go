@@ -44,6 +44,7 @@ type APIError struct {
 type APIResponse struct {
 	StatusCode int
 	Body       []byte
+	Headers    http.Header
 }
 
 func (e APIError) Error() string {
@@ -120,7 +121,7 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 		}
 		var ret APIError
 		json.Unmarshal(body, &ret)
-		return &APIResponse{StatusCode: response.StatusCode, Body: body}, &ret
+		return &APIResponse{StatusCode: response.StatusCode, Body: body, Headers: response.Header}, &ret
 	}
 
 	if err != nil {
@@ -133,5 +134,6 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 	return &APIResponse{
 		Body:       body,
 		StatusCode: response.StatusCode,
+		Headers:    response.Header,
 	}, nil
 }

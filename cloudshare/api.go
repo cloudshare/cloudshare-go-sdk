@@ -172,8 +172,8 @@ type EditVMHardwareRequest struct {
 }
 
 type EditVMHardwareResponse struct {
-	ConflictsFound bool   `json:"conflictsFound"`
-	Conflicts      string `json:"conflicts"`
+	ConflictsFound bool        `json:"conflictsFound"`
+	Conflicts      interface{} `json:"conflicts"`
 }
 
 func (c *Client) EditVMHardware(request EditVMHardwareRequest, response *EditVMHardwareResponse) error {

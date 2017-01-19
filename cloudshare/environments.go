@@ -67,8 +67,8 @@ type VMAccessDetails struct {
 	ExternalAddress   string      `json:"externalAddress"`
 	InternalAddresses []string    `json:"internalAddresses"`
 	CPUCount          int         `json:"cpuCount"`
-	DiskSizeGb        int         `json:"diskSizeGb"`
-	MemorySizeMb      int         `json:"memorySizeMb"`
+	DiskSizeGB        int         `json:"diskSizeGb"`
+	MemorySizeMB      int         `json:"memorySizeMb"`
 	Username          string      `json:"username"`
 	Password          string      `json:"password"`
 	ConsoleToken      string      `json:"consoleToken"`

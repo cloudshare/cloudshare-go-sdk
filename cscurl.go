@@ -29,6 +29,10 @@ func main() {
 			Usage:  "CloudShare API ID",
 			EnvVar: "CLOUDSHARE_API_ID",
 		},
+		cli.BoolFlag{
+			Name:  "headers, I",
+			Usage: "Print response headers",
+		},
 		cli.StringFlag{
 			Name:  "data, d",
 			Value: "",
@@ -56,6 +60,8 @@ func main() {
 
 		method := c.String("method")
 
+		show_headers := c.Bool("headers")
+
 		client := &cs.Client{
 			APIKey: apiKey,
 			APIID:  apiID,
@@ -71,6 +77,14 @@ func main() {
 		path := strings.Replace(parsed.Path, "api/v3/", "", 1)
 
 		response, err := client.Request(method, path, &query, &data)
+		if show_headers {
+			for key, value := range response.Headers {
+				for _, x := range value {
+					fmt.Printf("%s: %s\n", key, x)
+				}
+			}
+			fmt.Println("\n\n")
+		}
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println(string(response.Body))
