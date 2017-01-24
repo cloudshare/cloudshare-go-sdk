@@ -193,8 +193,9 @@ func waitForEnvStatus(t *testing.T, envID string, code EnvironmentStatusCode) En
 
 func TestWaitForEnvironment(t *testing.T) {
 	env, apierr := c.GetEnvironmentByName(testEnvName)
-	envID := env.ID
 	require.Nil(t, apierr, "failed to fetch envs")
+	require.NotNil(t, env, "Test env not found")
+	envID := env.ID
 	// Suspend and wait for suspended status
 	require.Nil(t, c.EnvironmentSuspend(envID))
 	require.Equal(t, StatusSuspended, waitForEnvStatus(t, envID, StatusSuspended))
@@ -219,7 +220,7 @@ func TestCreateEnv(t *testing.T) {
 	region1 := regions[0].ID
 
 	var templates = []VMTemplate{}
-	var params = GetTemplateParams{templateType: "1", regionID: region1}
+	var params = GetTemplateParams{TemplateType: "1", RegionID: region1}
 	apierr = c.GetTemplates(&params, &templates)
 	require.Nil(t, apierr, "failed to fetch templates")
 

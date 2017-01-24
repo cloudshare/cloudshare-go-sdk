@@ -153,9 +153,9 @@ type CreateTemplateEnvResponse struct {
 	take int (default 0) - how many to return. 0 = return all.
 */
 type GetTemplateParams struct {
-	templateType string
-	projectID    string
-	regionID     string
-	skip         int
-	take         int
+	TemplateType string
+	ProjectID    string
+	RegionID     string
+	Skip         int
+	Take         int
 }

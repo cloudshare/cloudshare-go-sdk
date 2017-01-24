@@ -14,7 +14,7 @@ func main() {
 	var projects = []cloudshare.Project{}
 	apierr := c.GetProjects(&projects)
 	if apierr != nil {
-		panic(apierr.InnerError)
+		panic(apierr)
 	}
 	fmt.Printf("Project 1: name: %s, id: %s\n", projects[0].Name, projects[0].ID)
 }

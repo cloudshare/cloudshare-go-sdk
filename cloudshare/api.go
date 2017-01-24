@@ -185,20 +185,20 @@ func (c *Client) EditVMHardware(request EditVMHardwareRequest, response *EditVMH
 func (c *Client) GetTemplates(params *GetTemplateParams, ret *[]VMTemplate) error {
 	query := url.Values{}
 	if params != nil {
-		if params.skip != 0 {
-			query.Add("skip", fmt.Sprintf("%d", params.skip))
+		if params.Skip != 0 {
+			query.Add("skip", fmt.Sprintf("%d", params.Skip))
 		}
-		if params.take != 0 {
-			query.Add("take", fmt.Sprintf("%d", params.take))
+		if params.Take != 0 {
+			query.Add("take", fmt.Sprintf("%d", params.Take))
 		}
-		if params.regionID != "" {
-			query.Add("regionId", params.regionID)
+		if params.RegionID != "" {
+			query.Add("regionId", params.RegionID)
 		}
-		if params.projectID != "" {
-			query.Add("projectId", params.projectID)
+		if params.ProjectID != "" {
+			query.Add("projectId", params.ProjectID)
 		}
-		if params.templateType != "" {
-			query.Add("templateType", params.templateType)
+		if params.TemplateType != "" {
+			query.Add("templateType", params.TemplateType)
 		}
 	}
 	return c.makeGetRequest("templates", ret, &query)
