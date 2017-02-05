@@ -78,6 +78,7 @@ func main() {
 
 		response, err := client.Request(method, path, &query, &data)
 		if show_headers {
+			fmt.Printf("Status code: %d\n", response.StatusCode)
 			for key, value := range response.Headers {
 				for _, x := range value {
 					fmt.Printf("%s: %s\n", key, x)
