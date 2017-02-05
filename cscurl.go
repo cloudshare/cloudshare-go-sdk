@@ -12,6 +12,20 @@ import (
 func main() {
 	app := cli.NewApp()
 
+	app.Name = "CSCURL"
+
+	app.Description = "Invoke CloudShare REST API calls from command-line"
+	app.Usage = "CloudShare REST API CLI Utility"
+	app.Authors = []cli.Author{{
+		Name:  "Assaf Lavie",
+		Email: "assaf@cloudshare.com",
+	},
+	}
+
+	fmt.Printf("%+v\n", app)
+
+	app.Version = "1.1.3"
+
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "method, m",
@@ -60,7 +74,7 @@ func main() {
 
 		method := c.String("method")
 
-		show_headers := c.Bool("headers")
+		showHeaders := c.Bool("headers")
 
 		client := &cs.Client{
 			APIKey: apiKey,
@@ -77,7 +91,7 @@ func main() {
 		path := strings.Replace(parsed.Path, "api/v3/", "", 1)
 
 		response, err := client.Request(method, path, &query, &data)
-		if show_headers {
+		if showHeaders {
 			fmt.Printf("Status code: %d\n", response.StatusCode)
 			for key, value := range response.Headers {
 				for _, x := range value {
