@@ -22,8 +22,6 @@ func main() {
 	},
 	}
 
-	fmt.Printf("%+v\n", app)
-
 	app.Version = "1.1.3"
 
 	app.Flags = []cli.Flag{
