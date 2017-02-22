@@ -9,7 +9,9 @@ Fetch your API key and ID from the [user details page](https://use.cloudshare.co
 
 ## Example - generic REST API calls
 
-Use the `Client` struct to execute any REST API call as defined [in the docs](http://docs.cloudshare.com/rest-api/v3/environments/envs/)
+Use the `Client` struct to execute any REST API call as defined [in the REST API docs](http://docs.cloudshare.com/rest-api/v3/environments/envs/).
+
+See also the [godoc for this library](https://godoc.org/github.com/cloudshare/go-sdk/cloudshare).
 
 ```
 package main
