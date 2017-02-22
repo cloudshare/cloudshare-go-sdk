@@ -14,7 +14,6 @@ Use the `Client` struct to execute any REST API call as defined [in the docs](ht
 ```
 package main
 
-import "fmt"
 import "github.com/cloudshare/go-sdk/cloudshare"
 import "net/url"
 
@@ -31,7 +30,7 @@ func main() {
     // Suspend a running environment
     queryParams = &url.Values{}
     queryParams.Add("envId", "my-env-id-here")
-    apiresponse, apierror = c.Request("PUT", "envs/actions/suspend", nil, nil)
+    apiresponse, apierror = c.Request("PUT", "envs/actions/suspend", queryParams, nil)
 }
 
 ```
