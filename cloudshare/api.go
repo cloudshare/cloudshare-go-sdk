@@ -93,6 +93,10 @@ func (c *Client) GetPolicies(projectID string, ret *[]Policy) error {
 	return c.makeGetRequest(path, ret, nil)
 }
 
+func (c *Client) CreateProjectPolicy(request PolicyRequest, response *PolicyCreationResponse) error {
+	return c.makePostRequest("policies", response, nil, request)
+}
+
 // GetEnvironments returns a list of environments, either in brief or full details
 // Possible criteria: allowed | allvisible
 func (c *Client) GetEnvironments(brief bool, criteria string, ret *Environments) error {

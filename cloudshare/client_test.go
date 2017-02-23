@@ -169,7 +169,7 @@ func TestFindTemplateByName(t *testing.T) {
 	templates := []VMTemplate{}
 	require.Nil(t, c.GetTemplates(nil, &templates))
 	for _, template := range templates {
-		if template.Name == "Docker - Ubuntu 14.04 Server" {
+		if template.Name == "Docker - Ubuntu 14.04 Server - SMALL" {
 			t.Logf("Found docker template: %s", template.ID)
 			return
 		}
@@ -201,6 +201,48 @@ func TestWaitForEnvironment(t *testing.T) {
 	require.Equal(t, StatusSuspended, waitForEnvStatus(t, envID, StatusSuspended))
 	require.Nil(t, c.EnvironmentResume(envID))
 	require.Equal(t, StatusReady, waitForEnvStatus(t, envID, StatusReady))
+}
+
+func TestPolicies(t *testing.T) {
+	skipNoAPIKeys(t)
+	skipResourceCreation(t)
+
+	var projects = []Project{}
+	apierr := c.GetProjects(&projects)
+	require.Nil(t, apierr, "failed to fetch projects")
+	requireGreaterThan(t, len(projects), 0)
+	var proj1 Project = projects[0]
+
+	maxMinutes := 60 * 24 * 3
+
+	var policyRequest = PolicyRequest{
+		Name:                                 "test-policy-delete-after-3-days",
+		ProjectID:                            proj1.ID,
+		RunTimeTotalMinutes:                  maxMinutes,
+		DiskTimeTotalMinutes:                 maxMinutes,
+		AutoAction:                           "SuspendTheEnvironment",
+		AutoActionThresholdMinutesForSuspend: 15,
+	}
+
+	var policies = []Policy{}
+	apierr = c.GetPolicies(proj1.ID, &policies)
+	require.Nil(t, apierr, "failed to fetch policies")
+
+	var existingPolicyFound bool = false
+	for _, policy := range policies {
+		if policy.Name == policyRequest.Name {
+			existingPolicyFound = true
+		}
+	}
+
+	if !existingPolicyFound {
+		var policyResponse PolicyCreationResponse = PolicyCreationResponse{}
+		apierr := c.CreateProjectPolicy(policyRequest, &policyResponse)
+		require.Nil(t, apierr, "failed to create policy")
+		require.NotEmpty(t, policyResponse.ID, apierr)
+		require.Equal(t, policyRequest.Name, policyResponse.Name)
+	}
+
 }
 
 func TestCreateEnv(t *testing.T) {

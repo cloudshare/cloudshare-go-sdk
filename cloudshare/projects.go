@@ -145,3 +145,17 @@ type Policy struct {
 	AllowEnvironmentCreation bool   `json:"allowEnvironmentCreation"`
 	ID                       string `json:"id"`
 }
+
+type PolicyRequest struct {
+	Name                                 string `json:"name"`
+	ProjectID                            string `json:"projectId"`
+	RunTimeTotalMinutes                  int    `json:"runTimeTotalMinutes"`
+	DiskTimeTotalMinutes                 int    `json:"diskTimeTotalMinutes"`
+	AutoAction                           string `json:"autoAction"`
+	AutoActionThresholdMinutesForSuspend int    `json:"autoActionThresholdMinutesForSuspend"`
+}
+
+type PolicyCreationResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
