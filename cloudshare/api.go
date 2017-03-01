@@ -26,11 +26,11 @@ func (c *Client) makeRequest(method string, path string, response interface{}, p
 	}
 	if response != nil {
 		e := json.Unmarshal(res.Body, &response)
-		//// NOCOMMIT
-		//fmt.Println(path)
+		// NOCOMMIT
+		// fmt.Println(path)
 		// fmt.Println(string(res.Body))
-		//fmt.Println("---------------------------------")
-		////
+		// fmt.Println("---------------------------------")
+		//
 		if e != nil {
 			return APIError{InnerError: e}
 		}

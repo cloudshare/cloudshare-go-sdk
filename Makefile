@@ -28,4 +28,11 @@ upload: package
 clean:
 	rm -rf dist
 
+test-readonly:
+	cd cloudshare; go test -v
+
+test-write:
+	cd cloudshare; DEBUG=true CLOUDSHARE_API_HOST="admin.cloudshare.com" ALLOW_TEST_CREATE=true go test -v
+
+
 .PHONY: package $(PLATFORMS) build clean

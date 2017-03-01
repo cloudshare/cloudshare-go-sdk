@@ -1,10 +1,12 @@
 package cloudshare
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -12,15 +14,23 @@ import (
 // APIKey & APIID are mandatory, and you can get your keys on the user details page.
 // Tags is optional, and defaults to "go_sdk". It's for internal analytics, so feel free to ignore it.
 type Client struct {
-	APIKey string
-	APIID  string
-	Tags   string
+	APIKey  string
+	APIID   string
+	Tags    string
+	APIHost string
 }
 
-func buildURL(path string, params *url.Values) *url.URL {
+func (c *Client) buildURL(path string, params *url.Values) *url.URL {
+
+	host := c.APIHost
+	if host == "" {
+		host = "use.cloudshare.com"
+
+	}
+
 	u := &url.URL{
 		Scheme: "https",
-		Host:   "use.cloudshare.com",
+		Host:   host,
 		Path:   "/api/v3/" + strings.TrimLeft(path, "/"),
 	}
 
@@ -72,6 +82,11 @@ Example:
 */
 func (c *Client) Request(method string, path string, queryParams *url.Values, content *string) (*APIResponse, error) {
 	client := http.Client{}
+	if os.Getenv("DEBUG") == "true" {
+		client.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
 
 	if c.Tags == "" {
 		c.Tags = "go_sdk"
@@ -80,9 +95,11 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 	if queryParams == nil {
 		queryParams = &url.Values{}
 	}
-	queryParams.Set("apiTags", c.Tags)
+	// queryParams.Set("apiTags", c.Tags)
 
-	url := buildURL(path, queryParams)
+	url := c.buildURL(path, queryParams)
+
+	// fmt.Printf("url: %s\n", url)
 
 	headers := &http.Header{}
 	headers.Set("Content-Type", "application/json")
@@ -103,10 +120,13 @@ func (c *Client) Request(method string, path string, queryParams *url.Values, co
 
 		// TODO: Test this with Unicode
 		request.ContentLength = int64(len(*content))
+		// fmt.Printf("Request body: %s\n", *content)
 	}
 
 	response, err := client.Do(request)
+
 	if err != nil {
+		// fmt.Println(err)
 		return nil, APIError{InnerError: err}
 	}
 

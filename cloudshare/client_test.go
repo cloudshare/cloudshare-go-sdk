@@ -10,30 +10,44 @@ import (
 	"time"
 )
 
-func TestBuildURL(t *testing.T) {
-	require.Equal(t, "https://use.cloudshare.com/api/v3/projects",
-		buildURL("projects", nil).String(), "failed to build url")
-
-	require.Equal(t, "https://use.cloudshare.com/api/v3/projects/",
-		buildURL("/projects/", nil).String(), "failed to build url")
-
-	params := &url.Values{}
-	params.Set("key", "value_with/_in_it")
-	require.Equal(t, "https://use.cloudshare.com/api/v3/path?key=value_with%2F_in_it", buildURL("path", params).String(), "url param encoding failed")
+func envWithDefault(key string, def string) string {
+	e := os.Getenv(key)
+	if e == "" {
+		return def
+	}
+	return e
 }
 
-type PingResponse struct {
-	Result string `json:"result"`
-}
+var APIHost = envWithDefault("CLOUDSHARE_API_HOST", "use.cloudshare.com")
 
 const testEnvName = "go-sdk-test-env"
 
 var apikey, apiid, allowTestCreate = os.Getenv("CLOUDSHARE_API_KEY"), os.Getenv("CLOUDSHARE_API_ID"), os.Getenv("ALLOW_TEST_CREATE")
 
-var c = &Client{
-	APIKey: apikey,
-	APIID:  apiid,
-	Tags:   "go_sdk_test",
+func getClient() *Client {
+	return &Client{
+		APIKey:  apikey,
+		APIID:   apiid,
+		Tags:    "go_sdk_test",
+		APIHost: APIHost,
+	}
+}
+
+func TestBuildURL(t *testing.T) {
+	c := getClient()
+	require.Equal(t, "https://"+APIHost+"/api/v3/projects",
+		c.buildURL("projects", nil).String(), "failed to build url")
+
+	require.Equal(t, "https://"+APIHost+"/api/v3/projects/",
+		c.buildURL("/projects/", nil).String(), "failed to build url")
+
+	params := &url.Values{}
+	params.Set("key", "value_with/_in_it")
+	require.Equal(t, "https://"+APIHost+"/api/v3/path?key=value_with%2F_in_it", c.buildURL("path", params).String(), "url param encoding failed")
+}
+
+type PingResponse struct {
+	Result string `json:"result"`
 }
 
 func skipNoAPIKeys(t *testing.T) {
@@ -50,9 +64,10 @@ func skipResourceCreation(t *testing.T) {
 
 func TestPing(t *testing.T) {
 	skipNoAPIKeys(t)
+	c := getClient()
 
 	res, apierr := c.Request("GET", "ping", nil, nil)
-	require.Nil(t, apierr, "failed to ping")
+	require.Nil(t, apierr, "failed to ping %s", apierr)
 	var parsed PingResponse
 	err := json.Unmarshal(res.Body, &parsed)
 	require.NoError(t, err, "Failed to parse json")
@@ -76,6 +91,7 @@ func TestBadKeys(t *testing.T) {
 
 func TestGetBlueprints(t *testing.T) {
 	skipNoAPIKeys(t)
+	c := getClient()
 
 	var projects = []Project{}
 	apierr := c.GetProjects(&projects)
@@ -106,6 +122,7 @@ func TestGetProjectsByFilter(t *testing.T) {
 	skipNoAPIKeys(t)
 
 	var projects = []Project{}
+	c := getClient()
 	apierr := c.GetProjectsByFilter([]string{"WhereUserIsProjectManager"}, &projects)
 	require.Nil(t, apierr, "failed to fetch projects")
 }
@@ -113,6 +130,7 @@ func TestGetProjectsByFilter(t *testing.T) {
 func TestGetEnvs(t *testing.T) {
 	skipNoAPIKeys(t)
 	var envs = Environments{}
+	c := getClient()
 	apierr := c.GetEnvironments(true, "allvisible", &envs)
 	require.Nil(t, apierr, "failed to fetch envs")
 
@@ -125,6 +143,7 @@ func TestGetEnvs(t *testing.T) {
 
 func TestGetEnvDetails(t *testing.T) {
 	skipNoAPIKeys(t)
+	c := getClient()
 	env, apierr := c.GetEnvironmentByName(testEnvName)
 	require.Nil(t, apierr, "failed to fetch env by ID")
 	require.NotNil(t, env, "failed to find test env. possibly this test suite hasn't been run with ALLOW_TEST_CREATE?")
@@ -137,6 +156,7 @@ func TestGetEnvDetails(t *testing.T) {
 
 func TestEnvResume(t *testing.T) {
 	skipNoAPIKeys(t)
+	c := getClient()
 	env, apierr := c.GetEnvironmentByName(testEnvName)
 	require.Nil(t, apierr, "failed to fetch env by name")
 	require.NotNil(t, env)
@@ -146,6 +166,7 @@ func TestEnvResume(t *testing.T) {
 
 func TestEnvExtend(t *testing.T) {
 	skipNoAPIKeys(t)
+	c := getClient()
 	env, apierr := c.GetEnvironmentByName(testEnvName)
 	require.NotNil(t, env)
 	require.Nil(t, apierr, "failed to fetch env by name")
@@ -158,6 +179,7 @@ func TestDeleteEnv(t *testing.T) {
 	if os.Getenv("TEST_DELETE_ENV") != "true" {
 		t.Skip("Not running delete-env test unless TEST_DELETE_ENV is true")
 	}
+	c := getClient()
 	env, apierr := c.GetEnvironmentByName(testEnvName)
 	require.Nil(t, apierr, "failed to fetch env by name")
 	require.NotNil(t, env)
@@ -167,6 +189,7 @@ func TestDeleteEnv(t *testing.T) {
 func TestFindTemplateByName(t *testing.T) {
 	skipNoAPIKeys(t)
 	templates := []VMTemplate{}
+	c := getClient()
 	require.Nil(t, c.GetTemplates(nil, &templates))
 	for _, template := range templates {
 		if template.Name == "Docker - Ubuntu 14.04 Server - SMALL" {
@@ -178,6 +201,7 @@ func TestFindTemplateByName(t *testing.T) {
 }
 
 func waitForEnvStatus(t *testing.T, envID string, code EnvironmentStatusCode) EnvironmentStatusCode {
+	c := getClient()
 	details := EnvironmentExtended{}
 	for i := 0; i < 10; i++ {
 		require.Nil(t, c.GetEnvironmentExtended(envID, &details))
@@ -192,6 +216,7 @@ func waitForEnvStatus(t *testing.T, envID string, code EnvironmentStatusCode) En
 }
 
 func TestWaitForEnvironment(t *testing.T) {
+	c := getClient()
 	env, apierr := c.GetEnvironmentByName(testEnvName)
 	require.Nil(t, apierr, "failed to fetch envs")
 	require.NotNil(t, env, "Test env not found")
@@ -208,6 +233,7 @@ func TestPolicies(t *testing.T) {
 	skipResourceCreation(t)
 
 	var projects = []Project{}
+	c := getClient()
 	apierr := c.GetProjects(&projects)
 	require.Nil(t, apierr, "failed to fetch projects")
 	requireGreaterThan(t, len(projects), 0)
@@ -216,19 +242,19 @@ func TestPolicies(t *testing.T) {
 	maxMinutes := 60 * 24 * 3
 
 	var policyRequest = PolicyRequest{
-		Name:                                 "test-policy-delete-after-3-days",
-		ProjectID:                            proj1.ID,
-		RunTimeTotalMinutes:                  maxMinutes,
-		DiskTimeTotalMinutes:                 maxMinutes,
-		AutoAction:                           "SuspendTheEnvironment",
-		AutoActionThresholdMinutesForSuspend: 15,
+		Name:                    "test-policy-delete-after-3-days",
+		ProjectID:               proj1.ID,
+		RuntimeLeaseMinutes:     maxMinutes,
+		StorageLeaseMinutes:     maxMinutes,
+		InactivityHandlingType:  "SuspendTheEnvironment",
+		InactivityThresholdTime: 15,
 	}
 
 	var policies = []Policy{}
 	apierr = c.GetPolicies(proj1.ID, &policies)
 	require.Nil(t, apierr, "failed to fetch policies")
 
-	var existingPolicyFound bool = false
+	var existingPolicyFound = false
 	for _, policy := range policies {
 		if policy.Name == policyRequest.Name {
 			existingPolicyFound = true
@@ -240,7 +266,6 @@ func TestPolicies(t *testing.T) {
 		apierr := c.CreateProjectPolicy(policyRequest, &policyResponse)
 		require.Nil(t, apierr, "failed to create policy")
 		require.NotEmpty(t, policyResponse.ID, apierr)
-		require.Equal(t, policyRequest.Name, policyResponse.Name)
 	}
 
 }
@@ -248,6 +273,7 @@ func TestPolicies(t *testing.T) {
 func TestCreateEnv(t *testing.T) {
 	skipNoAPIKeys(t)
 	skipResourceCreation(t)
+	c := getClient()
 	env, apierr := c.GetEnvironmentByName(testEnvName)
 
 	require.Nil(t, apierr, "failed to fetch envs")

@@ -147,12 +147,12 @@ type Policy struct {
 }
 
 type PolicyRequest struct {
-	Name                                 string `json:"name"`
-	ProjectID                            string `json:"projectId"`
-	RunTimeTotalMinutes                  int    `json:"runTimeTotalMinutes"`
-	DiskTimeTotalMinutes                 int    `json:"diskTimeTotalMinutes"`
-	AutoAction                           string `json:"autoAction"`
-	AutoActionThresholdMinutesForSuspend int    `json:"autoActionThresholdMinutesForSuspend"`
+	Name                    string `json:"name"`
+	ProjectID               string `json:"projectId"`
+	RuntimeLeaseMinutes     int    `json:"runtimeLeaseMinutes"`
+	StorageLeaseMinutes     int    `json:"storageLeaseMinutes"`
+	InactivityHandlingType  string `json:"inactivityHandlingType"`
+	InactivityThresholdTime int    `json:"inactivityThresholdTime"`
 }
 
 type PolicyCreationResponse struct {
