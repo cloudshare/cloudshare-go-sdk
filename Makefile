@@ -10,6 +10,7 @@ out_dir = dist/$(os)/$(arch)
 out_file = $(out_dir)/$(base)
 main := cscurl.go
 current_dir := $(shell pwd)
+CLOUDSHARE_API_HOST=use.cloudshare.com
 
 build:
 	mkdir -p dist
@@ -29,10 +30,12 @@ clean:
 	rm -rf dist
 
 test-readonly:
-	cd cloudshare; go test -v
+	echo "Testing against API endpoint $(CLOUDSHARE_API_HOST)"
+	cd cloudshare; DEBUG="true" CLOUDSHARE_API_HOST=$(CLOUDSHARE_API_HOST) go test -v
 
 test-write:
-	cd cloudshare; DEBUG=true CLOUDSHARE_API_HOST="admin.cloudshare.com" ALLOW_TEST_CREATE=true go test -v
+	echo "Testing against API endpoint $(CLOUDSHARE_API_HOST)"
+	cd cloudshare; DEBUG="true" CLOUDSHARE_API_HOST=$(CLOUDSHARE_API_HOST) ALLOW_TEST_CREATE=true go test -v
 
 
 .PHONY: package $(PLATFORMS) build clean
