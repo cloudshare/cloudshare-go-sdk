@@ -86,6 +86,7 @@ func main() {
 			return err
 		}
 		query := parsed.Query()
+		client.APIHost = parsed.Host
 		path := strings.Replace(parsed.Path, "api/v3/", "", 1)
 
 		response, err := client.Request(method, path, &query, &data)
