@@ -113,7 +113,7 @@ $ cscurl https://use.cloudshare.com/api/v3/regions| jq
 ### POST request with JSON body - add a student to class
 
 ```
-$ cscurl.exe -m POST -d {'email':'student1@test.com','firstName':'John','lastName':'Doe'} https://use.cloudshare.com/api/v3/Class/Class_Id_Goes_Here/Students
+$ cscurl.exe -m POST -d '{"email":"student1@test.com","firstName":"John","lastName":"Doe"}' https://use.cloudshare.com/api/v3/Class/Class_Id_Goes_Here/Students
 ```
 
 ### PUT request with JSON body - setting the number of CPUs of a VM
